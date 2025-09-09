@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "wait.h": "c",
-        "ipc.h": "c"
+        "ipc.h": "c",
+        "pthread.h": "c"
     }
 }
