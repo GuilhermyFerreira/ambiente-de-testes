@@ -2,22 +2,23 @@
 #include <omp.h>
 
 int main(){
-    int i=0;
-    //for(i=0;i<2;i++)
+    int vector[10];;
+    for(int i=0;i<10;i++){
+        vector[i] = i+1;
+    }
+    printf("Dentro do fork\n");
     #pragma omp parallel
-    {
-        #pragma omp sigle nowait
-        {
-            printf("somente uma thread rodando\n");
-        }
-        printf("olaaaaa \n");
-
+    {   
         #pragma omp master
         {
-            printf("Somente a thread mestre rodando\n");
+            printf("Thread %d: ", omp_get_thread_num());
+            for(int i=0;i<10;i++){
+            printf("%d \n", vector[i]);
+            }
         }
+        
+        
     }
-    
     printf("Fora do fork\n");
 }
 
