@@ -6,6 +6,9 @@
 
 -Para compilar da forma recomendada é **gcc -fopenmp "nomeDoArquivo.c" -o "nomeDoArquivo_omp"**
 
+-Para executar com um numero especifico de threads: **OMP_NUM_THREADS=4** se for para linux
+e para windows: **$env:OMP_NUM_THREADS=4**
+
 -Para executar **"./nomeDoArquivo_omp"**
 
 # Introdução - OpenMP
