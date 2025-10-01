@@ -1,36 +1,57 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <omp.h>
 
-int main (int argc, char *argv[]) {
-    int max = 0;
-    if (argc > 1) sscanf (argv[1], "%d", &max);
-    if (max <= 0) return 1;
+#define N 16
 
-    int ts = omp_get_max_threads();
-    int sums[ts];
-    
-    #pragma omp parallel
-    {
-        int t = omp_get_thread_num();
-        int N_base = max / ts;
-        int r = max % ts;
+void prefix_sum(long *vec, long *result) {
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        result[i] = vec[i];
+    }
 
-        int N_prev = t * N_base + (t < r ? t : r);
-        int N_iter = N_base + (t < r ? 1 : 0);
+    for (int k = 0; k < 4; k++) {
+        int dist = 1 << k;
 
-        int t_lo = N_prev + 1; // Linha 12 modificada
-        int hi = t_lo + N_iter - 1; // Linha 13 modificada
-
-        sums[t] = 0;
-        
-        for (int i = t_lo; i <= hi; i++) {
-            sums[t] = sums[t] + i;
+        #pragma omp parallel for
+        for (int i = dist; i < N; i++) {
+            result[i] += result[i - dist];
         }
     }
-    
-    int sum = 0;
-    for (int t = 0; t < ts; t++) sum = sum + sums[t];
-    
-    printf ("%d\n", sum);
+}
+
+void print_vector(const char *name, long *vec) {
+    printf("%s: [", name);
+    for (int i = 0; i < N; i++) {
+        printf("%ld%s", vec[i], (i < N - 1) ? ", " : "");
+    }
+    printf("]\n");
+}
+
+int main() {
+    long vec1[N];
+    for (int i = 0; i < N; i++) {
+        vec1[i] = 1;
+    }
+    long result1[N];
+
+    long vec2[N];
+    for (int i = 0; i < N; i++) {
+        vec2[i] = i + 1;
+    }
+    long result2[N];
+
+    printf("Soma de Prefixos Inclusiva (N=16)\n");
+
+    prefix_sum(vec1, result1);
+    print_vector("Vetor Original 1", vec1);
+    print_vector("Soma de Prefixos 1", result1);
+
+    printf("\n");
+
+    prefix_sum(vec2, result2);
+    print_vector("Vetor Original 2", vec2);
+    print_vector("Soma de Prefixos 2", result2);
+
     return 0;
 }
